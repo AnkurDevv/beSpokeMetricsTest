@@ -16,11 +16,27 @@
       :items="members"
       :search="search"
     >
-    <template v-slot:activity="{ item }">
-      <v-chip color="green"
+    <template v-slot:[`item.activity`]="{ item }">
+      <v-chip class="mx-1" v-for="act in item.activity" :key="act" color="gray"
       >
-        {{ item.activity }}
+        {{ act }}
       </v-chip>
+    </template>
+    <template v-slot:[`item.actions`]="{ item }">
+      <v-icon
+        small
+        @click="deleteItem(item)"
+      >
+        mdi-delete
+      </v-icon>
+    </template>
+    <template v-slot:no-data>
+      <v-btn
+        color="primary"
+        @click="initialize"
+      >
+        Reset
+      </v-btn>
     </template>
     </v-data-table>
   </v-card>
@@ -40,8 +56,18 @@ export default {
         { text: 'Age', value: 'age' },
         { text: 'Rating', value: 'rating' },
         { text: 'Activities ( last 3 )', value: 'activity' },
+        { text: 'Actions', value: 'actions', sortable: false }
       ],
-      members: [
+      members:[]
+    }
+  },
+
+    created () {
+      this.initialize()
+    },
+  methods:{
+    initialize(){
+      this.members = [
         {
           name: 'john',
           age: 25,
@@ -60,8 +86,14 @@ export default {
           rating: 5,
           activity: ['soccer','judo','cardio'],
         },
-      ],
+      ]
+    },
+    deleteItem(item){
+      console.log("delete item function called");
+      this.editedIndex = this.members.indexOf(item)
+      this.editedItem = Object.assign({}, item)
+      this.dialogDelete = true
     }
-  },
+  }
 }
 </script>
